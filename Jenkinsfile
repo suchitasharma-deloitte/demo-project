@@ -32,7 +32,6 @@ pipeline {
                     }
                  }
             }
-            }
         stage('Building Docker Image'){
             steps{
                 sh '''
