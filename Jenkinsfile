@@ -27,9 +27,11 @@ pipeline {
         
         stage('Sonarqube Analysis'){
             steps{
-                   withSonarQubeEnv(installationName: 'sonarqube') {
-                        sh 'mvn clean org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar'
-                    }
+                 withSonarQubeEnv('SonarQube') {
+                              sh "mvn sonar:sonar \
+                              -Dsonar.projectKey=demo-project \
+                              -Dsonar.host.url=http://34.173.61.10:9000" 
+                }
             }
         }
         stage('Building Docker Image'){
