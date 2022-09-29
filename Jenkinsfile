@@ -1,7 +1,7 @@
 pipeline {
   agent any
   tools {
-        maven "Maven 3.8.6" 
+        maven "maven-3.8.6" 
    }
 
   stages {
@@ -23,19 +23,29 @@ pipeline {
         }
         
 
-      stage('Sonarqube Analysis - SAST') {
-            steps {
-                  withSonarQubeEnv('SonarQube') {
-           sh "mvn sonar:sonar \
-                              -Dsonar.projectKey=maven-jenkins-pipeline \
-                        -Dsonar.host.url=http://34.173.74.192:9000" 
-                }
-           timeout(time: 2, unit: 'MINUTES') {
-                      script {
-                        waitForQualityGate abortPipeline: true
+        stage('Sonarqube Analysis'){
+            steps{
+                 withSonarQubeEnv('sonarqube') {
+                              sh "mvn sonar:sonar \
+                              -Dsonar.projectKey=demo-project \
+                              -Dsonar.host.url=http://34.173.61.10:9000" 
                     }
-                }
-              }
+                 }
+            }
+            }
+        stage('Building Docker Image'){
+            steps{
+                sh '''
+                sudo docker build -t nanditasahu/devsecops-demo:$BUILD_NUMBER .
+                sudo docker images
+                '''
+            }
+        }
+          stage('Image Scanning Trivy'){
+            steps{
+               sh 'sudo trivy image nanditasahu/devsecops-demo:$BUILD_NUMBER > $WORKSPACE/trivy-image-scan/trivy-image-scan-$BUILD_NUMBER.txt'
+               
+            }
         }
      }
 }
