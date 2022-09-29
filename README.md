@@ -1,1 +1,1 @@
-# demo-project
+# maven-jenkins-pipeline
